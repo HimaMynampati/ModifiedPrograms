@@ -73,9 +73,9 @@ int postfixEvaluation(string str) {
 				s_eval.push(res);
 			}
 			if (str[i] == '/') {
-				right = s_eval.top();
-				s_eval.pop();
 				left = s_eval.top();
+				s_eval.pop();
+				right = s_eval.top();
 				s_eval.pop();
 				double res = division(right,left);
 				s_eval.push(res);
