@@ -17,8 +17,7 @@ bool balancingParanthesis(string exp)
 			s_balancing.push(exp[i]);
 			continue;
 		}
-		if (s_balancing.empty())
-			return true;
+		
 
 		switch (exp[i])
 		{
@@ -55,9 +54,9 @@ int postfixEvaluation(string str) {
 	double left, right;
 	int i = 0;
 
-	for (i = 0; str[i] != '\0'; i++) 
+	for (i = 0; str[i] != '\0'; i++)
 	{
-		if (isdigit(str[i])) 
+		if (isdigit(str[i]))
 		{
 			double a = (double)str[i];
 			s_eval.push(a - 48);
@@ -77,7 +76,7 @@ int postfixEvaluation(string str) {
 				s_eval.pop();
 				right = s_eval.top();
 				s_eval.pop();
-				double res = division(right,left);
+				double res = division(right, left);
 				s_eval.push(res);
 			}
 			if (str[i] == '+') {
@@ -99,7 +98,7 @@ int postfixEvaluation(string str) {
 		}
 
 	}
-	cout << endl<<"result is "<<s_eval.top();
+	cout << endl << "result is " << s_eval.top();
 	return 0;
 }
 
@@ -109,6 +108,12 @@ int priority(char ch)
 		return 2;
 	else if (ch == '-' || ch == '+')
 		return 1;
+	else if (ch == ')') 
+		return 6;
+	else if (ch == ']')
+		return 5;
+	else if (ch == '}')
+		return 4;
 	else
 		return -1;
 }
@@ -126,54 +131,104 @@ int main()
 	}
 	else
 	{
+		
 		int len = input.length();
 		char c;
-
 		for (int i = 0; i < len; i++)
 		{
-			if (isdigit(input[i]))
+			char ch = input[i];
+			if (ch >= '0'&&ch <= '9')
 			{
-				postfix_str += input[i];
-			}
-			else if (input[i] == '(')
-			{
-				s_main.push(input[i]);
-			}
-			else if (input[i] == ')')
-			{
-				while (!s_main.empty() && s_main.top()!='(')
-				{
-					c = s_main.top();
-					s_main.pop();
-					postfix_str += c;
-				}
-				if (s_main.top() == '(') {
-					c = s_main.top();
-					s_main.top();
-				}
+				postfix_str+= ch;
+		
 			}
 			else
 			{
-				while (!s_main.empty() && priority(input[i]) <= priority(s_main.top())) {
-					c = s_main.top();
-					s_main.pop();
-					postfix_str += c;
+				if (s_main.empty())
+				{
+					s_main.push(ch);
+					ch = s_main.top();
+		
 				}
-				s_main.push(input[i]);
+				else
+
+				{
+					if (priority(ch) > priority(s_main.top()))
+					{
+						if (priority(ch) == 6)
+						{
+							while (s_main.top() != '(')
+							{
+								postfix_str+= s_main.top();
+								
+								s_main.pop();
+	
+							}
+							s_main.pop();
+
+						}
+						else if (priority(ch) == 5)
+						{
+							while (s_main.top() != '[')
+							{
+								postfix_str += s_main.top();
+								
+								s_main.pop();
+
+							}
+							s_main.pop();
+
+						}
+						else if (priority(ch) == 4)
+						{
+							while (s_main.top() != '{')
+							{
+								postfix_str += s_main.top();
+							
+								s_main.pop();
+
+							}
+							s_main.pop();
+
+						}
+						else
+							s_main.push(ch);
+					}
+
+					else
+					{
+						if (priority(ch) == -1)
+						{
+							s_main.push(ch);
+						}
+						else
+						{
+							while (!s_main.empty())
+							{
+								if (s_main.top() != '('&&s_main.top() != '['&&s_main.top() != '{')
+								{
+									postfix_str += s_main.top();
+									s_main.pop();
+								}
+								else
+									break;
+							}
+							
+							s_main.push(ch);
+							
+						}
+					}
+				}
 			}
 		}
-		while (!s_main.empty()) {
-			c = s_main.top();
+		while (!s_main.empty())
+		{
+			postfix_str += s_main.top();
 			s_main.pop();
-			postfix_str += c;
 		}
-		for (int i = 0; i < len; i++) {
-			if (postfix_str[i] == '(') {
-				continue;
-			}
-			post_eval += postfix_str[i];
-		}
-		postfixEvaluation(post_eval);
+		
+	
+		postfixEvaluation(postfix_str);
 	}
 	getchar();
 	return 0;
